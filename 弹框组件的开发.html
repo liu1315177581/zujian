@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.login{
+			width: 300px;
+			height: 300px;
+			background: white;
+			border: 1px solid #000;
+			position: absolute;
+			left: 0;
+			top: 0;
+			z-index: 2;
+		}
+		#mask{
+			width: 500px;
+			height: 500px;
+			background: black;
+			opacity: 0.5;
+			position: absolute;
+			left: 0;
+			top: 0;
+			z-index: 1;
+		}
+	</style>
+</head>
+<body>
+	<input type="button" value="1"/>
+	<input type="button" value="2"/>
+	<input type="button" value="3"/>
+	<!-- <div id="mask"></div> -->
+</body>
+<script>
+	var btn = document.getElementsByTagName('input');
+	btn[0].onclick = function(){
+		var zujian = new tankuang();
+		zujian.init({
+			iNow: 0,
+			title:'登录'
+		});
+	}
+	btn[1].onclick = function(){
+		var zujian = new tankuang();
+		zujian.init({
+			iNow: 1,
+			w: 200,
+			h: 500,
+			dir: 'right',
+			title: "公告"
+		})
+	}
+	btn[2].onclick = function(){
+		var zujian = new tankuang();
+		zujian.init({
+			iNow: 2,
+			w: 300,
+			h: 300,
+			dir: 'center',
+			title: "aaa",
+			mask: true
+		})
+	}
+	function tankuang(){
+		this.div;
+		this.setting = {
+			w: 300,
+			h: 300,
+			dir: "center",
+			title: "",
+			mask: false
+		};
+	}
+	tankuang.prototype.onOff = {};
+	tankuang.prototype.init = function(old){
+		extend(this.setting,old);
+		if(this.onOff[this.setting.iNow] == undefined){
+			this.onOff[this.setting.iNow] = true;
+		}
+		if(this.onOff[this.setting.iNow]){
+			this.create();
+			this.fnClose();
+			if(this.setting.mask != false){
+				this.mask();
+			}
+			this.onOff[this.setting.iNow] = false;
+		}
+		
+	}
+	tankuang.prototype.create = function(){
+		this.div = document.createElement('div');
+		this.div.className = '';
+		this.div.innerHTML = '<div class="title"><span>'+this.setting.title+'</span><span class="close">X</span></div>';
+		this.div.className = "login"
+		document.body.appendChild(this.div);
+		this.setDate();
+	}
+	tankuang.prototype.setDate = function(){
+		this.div.style.width = this.setting.w + 'px';
+		this.div.style.height = this.setting.h + 'px';
+		if(this.setting.dir == 'center'){
+			this.div.style.left = (view().W - this.div.offsetWidth)/2 + 'px'; 
+			this.div.style.top = (view().H - this.div.offsetHeight)/2 + 'px'; 
+		}else if(this.setting.dir = "right"){
+			this.div.style.left = (view().W - this.div.offsetWidth) + 'px'; 
+			this.div.style.top = (view().H - this.div.offsetHeight) + 'px'; 
+		}
+	}
+	tankuang.prototype.fnClose = function(){
+		var _this = this;
+		var oClose = _this.div.getElementsByClassName('close')[0];
+		oClose.onclick = function(){
+			document.body.removeChild(_this.div);
+			if(_this.setting.mask == true){
+				document.body.removeChild(_this.oMark);
+			}
+			console.log(_this.setting.iNow);
+			_this.onOff[_this.setting.iNow] = true;
+		}
+	}
+	tankuang.prototype.mask = function(){
+		var oMark = document.createElement('div');
+		this.oMark = oMark;
+		oMark.id = 'mask';
+		document.body.appendChild(oMark);
+		oMark.style.width = view().W + "px";
+		oMark.style.height = view().H + 'px';
+
+	}
+	function extend(obj1,obj2){
+		for(var attr in obj2){
+			obj1[attr] = obj2[attr];
+		}
+		return obj1;
+	}
+
+	function view(){
+		return {
+			W:document.documentElement.clientWidth,
+			H:document.documentElement.clientHeight
+		}
+	}
+</script>
+</html>
